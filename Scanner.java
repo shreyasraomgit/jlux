@@ -54,10 +54,43 @@ class Scanner {
             case ';':
                 addToken(TokenType.SEMICOLON);
                 break;
-            case '*':
-                addToken(TokenType.STAR);
+            case '!':
+                addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+                break;
+            case '=':
+                addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+                break;
+            case '<':
+                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+                break;
+            case '>':
+                addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+            case '/':
+                if (match('/')) {
+                    while (peek() != '\n' && !isAtEnd())
+                        advance();
+                } else {
+                    addToken(TokenType.SLASH);
+                }
+            default:
+                Lox.error(line, "Unexpected Character.");
                 break;
         }
+    }
+
+    private char peek() {
+        if (isAtEnd())
+            return '\0';
+        return source.charAt(current);
+    }
+
+    private boolean match(char expected) {
+        if (isAtEnd())
+            return false;
+        if (source.charAt(current) != expected)
+            return false;
+        current++;
+        return true;
     }
 
     private boolean isAtEnd() {
